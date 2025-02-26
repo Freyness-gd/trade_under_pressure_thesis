@@ -1,3 +1,5 @@
-.xls filter=lfs diff=lfs merge=lfs -text
-.xlsx filter=lfs diff=lfs merge=lfs -text
-.dta filter=lfs diff=lfs merge=lfs -text
+data/geographic/dist_cepii.xls filter=lfs diff=lfs merge=lfs -text
+data/geographic/geo_cepii.xls filter=lfs diff=lfs merge=lfs -text
+data/sanctions/GSDB_V3.xls filter=lfs diff=lfs merge=lfs -text
+data/sanctions/Var_Description.xlsx filter=lfs diff=lfs merge=lfs -text
+data/sanctions/GSDB_V3_Dyadic.dta filter=lfs diff=lfs merge=lfs -text

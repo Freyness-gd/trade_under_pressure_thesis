@@ -3,11 +3,13 @@ from pandas import DataFrame
 import Constants
 
 
+# TODO: Add sanity checks
 def clean_gdp(
     data: DataFrame,
     start_year=Constants.START_YEAR,
     end_year=Constants.END_YEAR,
     missing_threshold=Constants.MISSING_THRESHOLD,
+    excluded_countries=Constants.EXCLUDED_COUNTRY_CODES,
     col_first=False,
 ):
     if start_year < Constants.START_YEAR or end_year > Constants.END_YEAR:
@@ -22,6 +24,13 @@ def clean_gdp(
     data = data[["ISO3"] + [str(year) for year in range(start_year, end_year + 1)]]
 
     data = remove_rows_with_missing(data, missing_threshold, col_first)
+    data = filter_excluded_countries(data, excluded_countries)
+
+    data = data[~data.isin(["CHI"]).any(axis=1)]
+
+    for key in Constants.REPLACE_COUNTRY.keys():
+        for value in Constants.REPLACE_COUNTRY[key]["values"]:
+            data = data.replace(value, key)
 
     return data
 
@@ -55,4 +64,11 @@ def remove_rows_with_missing(
     # TODO: Log with Debug
     # print("Length after filter: ", data.shape)
 
+    return data
+
+
+def filter_excluded_countries(
+    data, excluded_countries=Constants.EXCLUDED_COUNTRY_CODES
+):
+    data = data[~data.isin(excluded_countries).any(axis=1)]
     return data

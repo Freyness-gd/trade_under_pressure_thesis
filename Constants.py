@@ -1,7 +1,15 @@
 START_YEAR = 1980
 END_YEAR = 2020
 
+# Conversion
+REPLACE_COUNTRY = {
+    "ROM": {"values": ["ROU"]},
+    "SER": {"values": ["SRB"]},
+    "CHL": {"values": ["CHI"]},
+}
+
 # Filters
+
 MISSING_THRESHOLD = 0.01
 
 EXCLUDED_COUNTRY_CODES = [

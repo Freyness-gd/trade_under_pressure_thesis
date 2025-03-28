@@ -5,6 +5,7 @@ import Constants
 
 
 # TODO: Add sanity checks
+# TODO Log DEBUG
 def clean_cepii(data: DataFrame, excluded_countries=Constants.EXCLUDED_COUNTRY_CODES):
     # na_rows = data[data.isna().any(axis=1)][["origin", "destination"]]
     # # Sanity check
@@ -18,8 +19,8 @@ def clean_cepii(data: DataFrame, excluded_countries=Constants.EXCLUDED_COUNTRY_C
     # print("Unique countries in origin column", data["origin"].nunique())
     # print("Unique countries in destination column", data["destination"].nunique())
 
-    for key in excluded_countries.keys():
-        for value in excluded_countries[key]["values"]:
+    for key in Constants.REPLACE_COUNTRY.keys():
+        for value in Constants.REPLACE_COUNTRY[key]["values"]:
             data = data.replace(value, key)
 
     data = data[~data.isin(excluded_countries).any(axis=1)]

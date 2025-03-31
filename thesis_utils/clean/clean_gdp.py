@@ -1,3 +1,4 @@
+from loguru import logger as log
 from pandas import DataFrame
 
 from thesis_utils.constants import Constants
@@ -12,9 +13,10 @@ def clean_gdp(
     excluded_countries=Constants.EXCLUDED_COUNTRY_CODES,
     col_first=False,
 ):
-    print("Missing threshold: ", missing_threshold)
     if start_year < Constants.START_YEAR or end_year > Constants.END_YEAR:
         raise IndexError("Start or End Year out of bounds")
+
+    log.debug("Missing Threshold: {}", missing_threshold)
 
     data = data.drop(["Series Name", "Series Code", "Country Name"], axis=1)
     data = data.rename(columns=lambda x: x if not x.endswith("]") else x.split(" ")[0])
@@ -40,15 +42,7 @@ def remove_rows_with_missing(
     data: DataFrame, missing_threshold=Constants.MISSING_THRESHOLD, col_first=False
 ):
     # TODO: Log with DEBUG
-    # print("Length before filter: ", data.shape)
-    # for row in data.itertuples(name="Country"):
-    #     print(
-    #         data.loc[row.Index]["ISO3"],
-    #         ": ",
-    #         (data.loc[row.Index].isna().sum() / len(data.loc[row.Index])),
-    #         "\n",
-    #     )
-    #     print("Len ", len(data.loc[row.Index]), "\n")
+    log.debug("Length before filter: {}", data.shape)
     if col_first:
         data = data.loc[:, data.isnull().sum() / len(data) <= missing_threshold]
         data = data[

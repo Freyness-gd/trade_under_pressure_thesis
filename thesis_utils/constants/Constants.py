@@ -13,6 +13,9 @@ REPLACE_COUNTRY = {
 MISSING_THRESHOLD = 0.8
 
 EXCLUDED_COUNTRY_CODES = [
+    "PRK",
+    "ERI",
+    "GIB",
     "NCL",
     "ZAR",
     "WLF",

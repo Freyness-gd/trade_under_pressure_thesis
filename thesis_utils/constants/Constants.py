@@ -6,11 +6,13 @@ REPLACE_COUNTRY = {
     "ROM": {"values": ["ROU"]},
     "SER": {"values": ["SRB", "YUG"]},
     "CHL": {"values": ["CHI"]},
+    "RUS": { "values": ["SUN"] },
+    "DEU": { "values": ["DDR"] },
 }
 
 # Filters
 
-MISSING_THRESHOLD = 0.8
+MISSING_THRESHOLD = 0.35
 
 EXCLUDED_COUNTRY_CODES = [
     "PRK",

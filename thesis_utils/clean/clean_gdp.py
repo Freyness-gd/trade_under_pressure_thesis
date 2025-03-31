@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-import Constants
+from thesis_utils.constants import Constants
 
 
 # TODO: Add sanity checks
@@ -12,6 +12,7 @@ def clean_gdp(
     excluded_countries=Constants.EXCLUDED_COUNTRY_CODES,
     col_first=False,
 ):
+    print("Missing threshold: ", missing_threshold)
     if start_year < Constants.START_YEAR or end_year > Constants.END_YEAR:
         raise IndexError("Start or End Year out of bounds")
 
@@ -48,8 +49,6 @@ def remove_rows_with_missing(
     #         "\n",
     #     )
     #     print("Len ", len(data.loc[row.Index]), "\n")
-    # print("Len: ", len(data.columns))
-
     if col_first:
         data = data.loc[:, data.isnull().sum() / len(data) <= missing_threshold]
         data = data[
@@ -60,9 +59,6 @@ def remove_rows_with_missing(
             (data.isnull().sum(axis=1) / len(data.columns)) <= missing_threshold
         ]
         data = data.loc[:, data.isnull().sum() / len(data) <= missing_threshold]
-
-    # TODO: Log with Debug
-    # print("Length after filter: ", data.shape)
 
     return data
 

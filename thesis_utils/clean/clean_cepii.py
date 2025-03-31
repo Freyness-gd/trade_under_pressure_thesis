@@ -1,7 +1,7 @@
 import pandas as pd
 from pandas import DataFrame
 
-import Constants
+from thesis_utils.constants import Constants
 
 
 # TODO: Add sanity checks

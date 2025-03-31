@@ -1,16 +1,16 @@
-START_YEAR = 1980
-END_YEAR = 2020
+START_YEAR = 1974  # 1974
+END_YEAR = 2023  # 2023
 
 # Conversion
 REPLACE_COUNTRY = {
     "ROM": {"values": ["ROU"]},
-    "SER": {"values": ["SRB"]},
+    "SER": {"values": ["SRB", "YUG"]},
     "CHL": {"values": ["CHI"]},
 }
 
 # Filters
 
-MISSING_THRESHOLD = 0.01
+MISSING_THRESHOLD = 0.8
 
 EXCLUDED_COUNTRY_CODES = [
     "NCL",

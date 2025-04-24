@@ -16,7 +16,7 @@ def clean_gdp(
     if start_year < Constants.START_YEAR or end_year > Constants.END_YEAR:
         raise IndexError("Start or End Year out of bounds")
 
-    log.debug("Missing Threshold: {}", missing_threshold)
+    log.info("Missing Threshold: {}", missing_threshold)
 
     data = data.drop(["Series Name", "Series Code", "Country Name"], axis=1)
     data = data.rename(columns=lambda x: x if not x.endswith("]") else x.split(" ")[0])
@@ -41,8 +41,7 @@ def clean_gdp(
 def remove_rows_with_missing(
     data: DataFrame, missing_threshold=Constants.MISSING_THRESHOLD, col_first=False
 ):
-    # TODO: Log with DEBUG
-    log.debug("Length before filter: {}", data.shape)
+    log.info("Length before filter: {}", data.shape)
     if col_first:
         data = data.loc[:, data.isnull().sum() / len(data) <= missing_threshold]
         data = data[
@@ -53,6 +52,8 @@ def remove_rows_with_missing(
             (data.isnull().sum(axis=1) / len(data.columns)) <= missing_threshold
         ]
         data = data.loc[:, data.isnull().sum() / len(data) <= missing_threshold]
+
+    log.info("Length after filter: {}", data.shape)
 
     return data
 

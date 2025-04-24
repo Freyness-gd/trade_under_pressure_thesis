@@ -6,13 +6,13 @@ REPLACE_COUNTRY = {
     "ROM": {"values": ["ROU"]},
     "SER": {"values": ["SRB", "YUG"]},
     "CHL": {"values": ["CHI"]},
-    "RUS": { "values": ["SUN"] },
-    "DEU": { "values": ["DDR"] },
+    "RUS": {"values": ["SUN"]},
+    "DEU": {"values": ["DDR"]},
 }
 
 # Filters
 
-MISSING_THRESHOLD = 0.35
+MISSING_THRESHOLD = 0.15  # approx 162 countries from GDP dataset
 
 EXCLUDED_COUNTRY_CODES = [
     "PRK",

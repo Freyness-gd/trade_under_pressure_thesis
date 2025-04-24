@@ -247,6 +247,10 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
+# Trade Data
+/data/trade/import/IMPORT_*.xlsx
+/data/trade/import/EXPORT_*.xlsx
+
 .DS_Store
 
 

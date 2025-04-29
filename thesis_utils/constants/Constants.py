@@ -1,4 +1,4 @@
-START_YEAR = 1974  # 1974
+START_YEAR = 1988  # 1974
 END_YEAR = 2023  # 2023
 
 # Conversion

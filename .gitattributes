@@ -4,3 +4,4 @@ data/sanctions/GSDB_V4_dyadic.dta filter=lfs diff=lfs merge=lfs -text
 data/sanctions/GSDB_V4.csv filter=lfs diff=lfs merge=lfs -text
 data/sanctions/Var_Description.xlsx filter=lfs diff=lfs merge=lfs -text
 data/geographic/country_codes.xls filter=lfs diff=lfs merge=lfs -text
+data/countries/ne_10m_admin_0_countries.shp filter=lfs diff=lfs merge=lfs -text

@@ -3,5 +3,7 @@ from .clean.clean_codes import *
 from .clean.clean_gdp import *
 from .clean.clean_geopa import *
 from .clean.clean_gsdb import *
+from .clean.clean_trade import clean_trade
 from .constants import Constants
+from .merge_datasets import merge_datasets
 from .set_up_logger import set_up_logger

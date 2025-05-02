@@ -6,7 +6,9 @@ from thesis_utils.constants import Constants
 
 # TODO: Add sanity checks
 # TODO Log DEBUG
-def clean_cepii(data: DataFrame, excluded_countries=Constants.EXCLUDED_COUNTRY_CODES):
+def clean_cepii(
+    data: DataFrame, excluded_countries=Constants.EXCLUDED_COUNTRY_CODES
+) -> DataFrame:
     # na_rows = data[data.isna().any(axis=1)][["origin", "destination"]]
     # # Sanity check
     # na_rows.isna().sum()

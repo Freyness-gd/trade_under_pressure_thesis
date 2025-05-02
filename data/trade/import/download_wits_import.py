@@ -1,0 +1,241 @@
+import time
+from io import BytesIO
+from pathlib import Path
+
+import requests
+from openpyxl import load_workbook
+
+# --- Config ---
+reporter_codes = [
+  "ABW",
+  "AFG",
+  "AGO",
+    "ALB",
+    "AND",
+  "ARE",
+  "ARG",
+  "ARM",
+    "ATG",
+    "AUS",
+    "AUT",
+  "AZE",
+  "BDI",
+    "BEL",
+    "BEN",
+  "BFA",
+  "BGD",
+  "BGR",
+  "BHR",
+  "BHS",
+  "BIH",
+  "BLR",
+  "BLZ",
+    "BOL",
+    "BRA",
+  "BRB",
+    "BRN",
+  "BTN",
+  "BWA",
+  "CAF",
+    "CAN",
+  "CHE",
+    "CHL",
+    "CHN",
+  "CIV",
+  "CMR",
+    "COL",
+    "COM",
+  "CPV",
+    "CRI",
+    "CUB",
+    "CYP",
+  "CZE",
+  "DEU",
+  "DJI",
+  "DMA",
+    "DNK",
+    "DOM",
+  "DZA",
+    "ECU",
+    "EGY",
+  "ESH",
+  "ESP",
+  "EST",
+    "ETH",
+  "EUN",
+  "FIN",
+    "FJI",
+    "FRA",
+  "FRO",
+  "FSM",
+    "GAB",
+  "GBR",
+  "GEO",
+  "GHA",
+  "GIN",
+    "GMB",
+  "GNB",
+  "GNQ",
+    "GRC",
+    "GRD",
+  "GRL",
+    "GTM",
+    "GUY",
+  "HKG",
+  "HND",
+  "HRV",
+    "HTI",
+    "HUN",
+    "IDN",
+  "IND",
+  "IRL",
+    "IRN",
+    "IRQ",
+  "ISL",
+    "ISR",
+    "ITA",
+    "JAM",
+    "JOR",
+  "JPN",
+  "KAZ",
+    "KEN",
+  "KGZ",
+  "KHM",
+    "KIR",
+  "KNA",
+    "KOR",
+    "KWT",
+  "LAO",
+  "LBN",
+    "LBR",
+    "LBY",
+  "LCA",
+  "LKA",
+  "LSO",
+  "LTU",
+    "LUX",
+  "LVA",
+  "MAR",
+  "MDA",
+    "MDG",
+    "MDV",
+  "MEX",
+  "MHL",
+  "MKD",
+    "MLI",
+    "MLT",
+  "MMR",
+  "MNG",
+  "MOZ",
+    "MRT",
+    "MUS",
+  "MWI",
+  "MYS",
+    "NAM",
+    "NER",
+    "NGA",
+  "NIC",
+  "NLD",
+    "NOR",
+  "NPL",
+  "NRU",
+  "NZL",
+    "OMN",
+    "PAK",
+    "PAN",
+    "PER",
+    "PHL",
+  "PLW",
+  "PNG",
+  "POL",
+  "PRI",
+    "PRT",
+  "PRY",
+    "QAT",
+  "ROM",
+  "RUS",
+    "RWA",
+    "SAU",
+  "SDN",
+    "SEN",
+  "SER",
+    "SGP",
+    "SLB",
+  "SLE",
+  "SLV",
+  "SMR",
+    "SOM",
+  "STP",
+    "SUR",
+  "SVK",
+  "SVN",
+    "SWE",
+  "SWZ",
+  "SYC",
+    "SYR",
+  "TCD",
+    "TGO",
+  "THA",
+  "TJK",
+  "TKM",
+    "TON",
+    "TTO",
+    "TUN",
+    "TUR",
+    "TUV",
+  "TWN",
+  "TZA",
+    "UGA",
+  "UKR",
+    "URY",
+  "USA",
+  "UZB",
+  "VCT",
+  "VEN",
+  "VNM",
+    "VUT",
+  "WLD",
+  "WSM",
+  "YEM",
+  "YUG",
+  "ZAF",
+    "ZMB",
+    "ZWE",
+]
+
+# reporter_codes = ["ABCD"]
+base_url = (
+    "https://wits.worldbank.org/Download.aspx?"
+    "StartYear=1988&EndYear=2023&Tradeflow=Import"
+    "&Indicator=MPRT-TRD-VL&Partner=ALL&Type=PartnerTimeseries&Lang=en"
+)
+
+# --- Download and Modify ---
+for code in reporter_codes:
+  filename = Path(f"IMPORT_{code}.xlsx")
+
+  # ── 1) skip if the file already exists ──────────────────────────────
+  if filename.exists():
+    print(f"✓ {filename} already present – skipping download")
+    continue
+
+    url = f"{base_url}&Reporter={code}"
+  print(f"Downloading: {filename} …")
+
+    try:
+      r = requests.get(url, timeout=30)
+      if r.status_code == 200:
+        # load workbook from response bytes
+        wb = load_workbook(BytesIO(r.content))
+        first_sheet = wb.sheetnames[0]
+        wb.remove(wb[first_sheet])  # drop first sheet
+        print(f"Removed '{first_sheet}' from {filename.name}")
+
+        wb.save(filename)
+        print(f"Saved: {filename.name}")
+        else:
+          print(f"✗ HTTP {r.status_code} for {code}")
+    except Exception as e:
+        print(f"Error processing {code}: {e}")
+
+    time.sleep(0.5)  # Wait 500ms between downloads

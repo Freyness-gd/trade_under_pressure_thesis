@@ -1,0 +1,20 @@
+{
+  "features": [
+    "financial",
+    "travel",
+    "other",
+    "GDP_reporter",
+    "GDP_partner",
+    "contig",
+    "comlang_off",
+    "colony",
+    "smctry",
+    "distw",
+    "arms",
+    "military",
+    "trade"
+  ],
+  "target": "EXPORT",
+  "seq_len": 10,
+  "hidden_size": 64
+}

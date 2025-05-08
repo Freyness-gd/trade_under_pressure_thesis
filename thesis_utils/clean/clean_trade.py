@@ -85,6 +85,19 @@ def clean_trade(intersection_labels: ndarray, codes: DataFrame):
 
     if reports:
         records = pa.concat(reports, ignore_index=True)
+        # Imputation of IMPORT and EXPORT, not needed as PPML takes those into account
+        # for col in ["IMPORT", "EXPORT"]:
+        #     records[col] = (
+        #         records.sort_values(by=["ISO3_reporter", "ISO3_partner", "Year"])
+        #         .groupby(["ISO3_reporter", "ISO3_partner"])[col]
+        #         .transform(
+        #             lambda x: x.interpolate(
+        #                 method="linear", limit_direction="both"
+        #             ).fillna(x.rolling(window=20, min_periods=1).median())
+        #         )
+        #     )
+        # for col in ["IMPORT", "EXPORT"]:
+        #     records[col] = records[col].mask(records[col] < 1, 0)
         return records
     else:
         return None

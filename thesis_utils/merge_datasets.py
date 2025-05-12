@@ -52,6 +52,12 @@ def merge_datasets(
             )
         ).sort_values(["ISO3", "Year"])
     ).reset_index(drop=True)
+
+    # Calculate average per year before imputation
+    gdp_year_average = pa.DataFrame(data={ "GDP_yearly_average": [] })
+    gdp_year_average["GDP_yearly_average"] = gdp_df_long.groupby("Year")["GDP"].mean()
+
+    # Impute GDP
     gdp_df_long = impute_gdp(gdp_df_long)
 
     # 4. Merge for each pair of countries the GDP of reporter and partner
@@ -122,9 +128,18 @@ def merge_datasets(
         }
     )
 
+    # Final merge
     codes_pairs_years_dist_trade_sanctions = codes_pairs_years_dist_trade.merge(
         gsdb_merge, on=["ISO3_reporter", "ISO3_partner", "Year"], how="left"
     )
+
+    codes_pairs_years_dist_trade_sanctions = (
+        codes_pairs_years_dist_trade_sanctions.merge(
+            gdp_year_average, on="Year", how="left"
+        )
+    )
+
+    # Fill missing binary variables with 0
     codes_pairs_years_dist_trade_sanctions["arms"] = (
         codes_pairs_years_dist_trade_sanctions["arms"].fillna(value=0)
     )

@@ -1,5 +1,5 @@
 START_YEAR = 1988  # 1974
-END_YEAR = 2020  # 2023
+END_YEAR = 2022  # 2023
 
 # Conversion
 REPLACE_COUNTRY = {
@@ -12,7 +12,7 @@ REPLACE_COUNTRY = {
 
 # Filters
 
-MISSING_THRESHOLD = 0.25  # approx 162 countries from GDP dataset
+MISSING_THRESHOLD = 0.25  # 162 countries from GDP dataset
 
 EXCLUDED_COUNTRY_CODES = [
     "PRK",

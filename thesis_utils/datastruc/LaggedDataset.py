@@ -3,10 +3,13 @@ from typing import Sequence, List
 import numpy as np
 import pandas as pd
 import torch
+from pandas import DataFrame
 from torch.utils.data import Dataset
 
 
 class LaggedDataset(Dataset):
+    laggedDataframe: DataFrame = None
+
     def __init__(
         self,
         data: pd.DataFrame,
@@ -26,12 +29,16 @@ class LaggedDataset(Dataset):
 
         new_lag_cols = [f"{c}_lag{i}" for c in lag_columns for i in range(1, lag + 1)]
         df = df.dropna(subset=new_lag_cols).reset_index(drop=True)
+        self.laggedDataframe = df.copy(deep=True)
 
         self.feature_cols: List[str] = list(features) + new_lag_cols
         self.X = torch.tensor(df[self.feature_cols].to_numpy(np.float32))
         self.y = torch.tensor(df[target].to_numpy(np.float32)).unsqueeze(1)
 
         self.row_idx = torch.tensor(df.index.to_numpy())
+
+    def lagged_dataframe(self):
+        return self.laggedDataframe
 
     def __len__(self) -> int:
         return len(self.y)

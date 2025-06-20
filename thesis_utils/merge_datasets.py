@@ -5,6 +5,15 @@ from pandas import DataFrame
 import thesis_utils as tu
 
 
+def impute_gdp(gdp: DataFrame) -> DataFrame:
+    gdp["GDP"] = gdp["GDP"].transform(
+        lambda x: x.interpolate(method="linear", limit_direction="both").fillna(
+            x.rolling(window=10, min_periods=1).median()
+        )
+    )
+    return gdp
+
+
 def merge_datasets(
     codes: DataFrame,
     intersection_labels: ndarray,
@@ -29,13 +38,13 @@ def merge_datasets(
 
     # 2. Create pairs with country pairs and years from `tu.Constants.START_YEAR` to
     # `tu.Constants.END_YEAR` (1988-2023 unless specified otherwise)
-    years = { "Year": range(tu.Constants.START_YEAR, tu.Constants.END_YEAR + 1) }
+    years = {"Year": range(tu.Constants.START_YEAR, tu.Constants.END_YEAR + 1)}
     years = pa.DataFrame(data=years)
     codes_pairs_years = codes_pairs.merge(years, how="cross")
 
     # 3. Pivot GDP to long format
     gdp_filter = gdp[gdp["ISO3"].isin(intersection_labels)].reset_index(drop=True)
-    gdp_filter = gdp_filter.rename(columns={ "Value": "GDP" })
+    gdp_filter = gdp_filter.rename(columns={"Value": "GDP"})
     gdp_df_long = (
         (
             gdp_filter.melt(id_vars="ISO3", var_name="Year", value_name="GDP").assign(
@@ -43,6 +52,13 @@ def merge_datasets(
             )
         ).sort_values(["ISO3", "Year"])
     ).reset_index(drop=True)
+
+    # Calculate average per year before imputation
+    gdp_year_average = pa.DataFrame(data={ "GDP_yearly_average": [] })
+    gdp_year_average["GDP_yearly_average"] = gdp_df_long.groupby("Year")["GDP"].mean()
+
+    # Impute GDP
+    gdp_df_long = impute_gdp(gdp_df_long)
 
     # 4. Merge for each pair of countries the GDP of reporter and partner
     codes_pairs_years_m1 = (
@@ -52,7 +68,7 @@ def merge_datasets(
             left_on=["ISO3_reporter", "Year"],
             right_on=["ISO3", "Year"],
         ).drop(columns="ISO3")
-    ).rename(columns={ "GDP": "GDP_reporter" })
+    ).rename(columns={"GDP": "GDP_reporter"})
     codes_pairs_years_final = (
         codes_pairs_years_m1.merge(
             gdp_df_long,
@@ -60,7 +76,7 @@ def merge_datasets(
             left_on=["ISO3_partner", "Year"],
             right_on=["ISO3", "Year"],
         ).drop(columns="ISO3")
-    ).rename(columns={ "GDP": "GDP_partner" })
+    ).rename(columns={"GDP": "GDP_partner"})
     codes_pairs_years_final = codes_pairs_years_final[
         codes_pairs_years_final["ISO3_partner"]
         != codes_pairs_years_final["ISO3_reporter"]
@@ -84,8 +100,7 @@ def merge_datasets(
         records, on=["ISO3_reporter", "ISO3_partner", "Year"], how="left"
     )
 
-    # Fill NAs with 0 for IMPORT and EXPORT column. (Temporary solution, is there a better way to impute data or
-    # should I even impute data?)
+    # Fill NAs with 0 for IMPORT and EXPORT column. No need for imputation as the PPML takes care of log(0)
     codes_pairs_years_dist_trade["IMPORT"] = codes_pairs_years_dist_trade[
         "IMPORT"
     ].fillna(value=0)
@@ -113,9 +128,18 @@ def merge_datasets(
         }
     )
 
+    # Final merge
     codes_pairs_years_dist_trade_sanctions = codes_pairs_years_dist_trade.merge(
         gsdb_merge, on=["ISO3_reporter", "ISO3_partner", "Year"], how="left"
     )
+
+    codes_pairs_years_dist_trade_sanctions = (
+        codes_pairs_years_dist_trade_sanctions.merge(
+            gdp_year_average, on="Year", how="left"
+        )
+    )
+
+    # Fill missing binary variables with 0
     codes_pairs_years_dist_trade_sanctions["arms"] = (
         codes_pairs_years_dist_trade_sanctions["arms"].fillna(value=0)
     )

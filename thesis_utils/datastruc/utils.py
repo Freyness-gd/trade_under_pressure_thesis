@@ -6,9 +6,9 @@ from torch.utils.data import Dataset
 
 from thesis_utils.constants import Constants
 from thesis_utils.datastruc import (
-  DatasetWrapper,
-  DatasetWrapperOptimized,
-  SlidingWindowDataset,
+    DatasetWrapper,
+    DatasetWrapperOptimized,
+    SlidingWindowDataset,
 )
 from thesis_utils.datastruc.LaggedDataset import LaggedDataset
 

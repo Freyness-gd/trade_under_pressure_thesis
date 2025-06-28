@@ -1,10 +1,15 @@
-from typing import Sequence, Tuple
+from typing import Sequence, Tuple, Dict
 
+import pandas as pd
 from pandas import DataFrame
 from torch.utils.data import Dataset
 
 from thesis_utils.constants import Constants
-from thesis_utils.datastruc import DatasetWrapper, SlidingWindowDataset
+from thesis_utils.datastruc import (
+  DatasetWrapper,
+  DatasetWrapperOptimized,
+  SlidingWindowDataset,
+)
 from thesis_utils.datastruc.LaggedDataset import LaggedDataset
 
 
@@ -54,6 +59,29 @@ def make_panel_datasets(
     )
     ds_remainder = DatasetWrapper(data=remainder_df, features=features, target=target)
     return ds_sampled, ds_remainder
+
+
+def make_panel_datasets_dyad(
+    data: pd.DataFrame,
+    features: Sequence[str],
+    target: str,
+    horizon: int = 1,
+) -> Tuple[Dataset, Dict[str, int]]:
+    df = data.copy()
+    df["dyad_idx"] = df["dyad_id"].cat.codes
+
+    # 2) Optional: retrieve dyad → index mapping (if needed)
+    dyad_to_idx = {dyad: idx for idx, dyad in enumerate(df["dyad_id"].cat.categories)}
+
+    # 3) Wrap into Dataset
+    dataset = DatasetWrapperOptimized(
+        data=df,
+        features=features,
+        target=target,
+        horizon=horizon,
+    )
+
+    return dataset, dyad_to_idx
 
 
 def make_panel_slidingwindows(

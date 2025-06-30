@@ -35,7 +35,7 @@ def within_r2(y_true: np.ndarray, y_pred: np.ndarray, pair_ids: np.ndarray) -> f
     return np.nan if sst_w == 0 else 1.0 - sse_w / sst_w
 
 
-def rmse(y_true, y_pred):
+def rmse(y_true: np.array, y_pred: np.array) -> float:
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
     mse = np.mean(np.square(y_pred - y_true))

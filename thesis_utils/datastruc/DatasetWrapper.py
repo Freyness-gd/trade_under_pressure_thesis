@@ -66,3 +66,34 @@ class DatasetWrapperOptimized(Dataset):
     def __getitem__(self, idx):
         # Return X with shape (1, D) so LSTM sees seq_len=1 (can modify later)
         return self.X[idx].unsqueeze(0), self.y[idx], self.dyad_idx[idx]
+
+
+class DatasetWrapperOptimizedWithYear(Dataset):
+    def __init__(
+        self,
+        data: pd.DataFrame,
+        features: Sequence[str],
+        target: str,
+        horizon: int = 1,
+    ):
+        # Convert to float32 directly from DataFrame to avoid copying unnecessarily
+        X_np = data[features].values.astype(np.float32)
+        y_np = data[target].values.astype(np.float32)
+        dyad_np = data["dyad_idx"].values.astype(np.int64)
+        year_np = data["Year"].values.astype(np.int64)
+
+        # Compute target windows (shifted columns)
+        n_samples = len(data) - horizon
+        self.X = torch.from_numpy(X_np[:n_samples])  # shape: [N, D]
+        self.y = torch.from_numpy(
+            np.column_stack([y_np[i + 1 : i + 1 + n_samples] for i in range(horizon)])
+        ).float()  # shape: [N, H]
+        self.dyad_idx = torch.from_numpy(dyad_np[:n_samples]).long()  # shape: [N]
+        self.year = torch.from_numpy(year_np[:n_samples]).long()
+
+    def __len__(self):
+        return self.X.shape[0]
+
+    def __getitem__(self, idx):
+        # Return X with shape (1, D) so LSTM sees seq_len=1 (can modify later)
+        return self.X[idx].unsqueeze(0), self.y[idx], self.dyad_idx[idx], self.year[idx]

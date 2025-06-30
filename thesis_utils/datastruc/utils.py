@@ -8,6 +8,7 @@ from thesis_utils.constants import Constants
 from thesis_utils.datastruc import (
     DatasetWrapper,
     DatasetWrapperOptimized,
+    DatasetWrapperOptimizedWithYear,
     SlidingWindowDataset,
 )
 from thesis_utils.datastruc.LaggedDataset import LaggedDataset
@@ -80,6 +81,29 @@ def make_panel_datasets_dyad(
         target=target,
         horizon=horizon,
     )
+
+    return dataset, dyad_to_idx
+
+
+def make_panel_datasets_dyad_year(
+    data: pd.DataFrame,
+    features: Sequence[str],
+    target: str,
+    horizon: int = 1,
+) -> Tuple[Dataset, Dict[str, int]]:
+  # Same as make panel datasets dyad but also return year
+  df = data.copy()
+  df["dyad_idx"] = df["dyad_id"].cat.codes
+  df["year"] = df["Year"].astype(int)
+  # 2) Optional: retrieve dyad → index mapping (if needed)
+  dyad_to_idx = { dyad: idx for idx, dyad in enumerate(df["dyad_id"].cat.categories) }
+  # 3) Wrap into Dataset
+  dataset = DatasetWrapperOptimizedWithYear(
+    data=df,
+    features=features,
+    target=target,
+    horizon=horizon,
+  )
 
     return dataset, dyad_to_idx
 

@@ -17,9 +17,8 @@ class DyadXLSTM(nn.Module):
         layers="msm",
     ):
         super(DyadXLSTM, self).__init__()
-        self.horizon = horizon
         self.dyad_embed = nn.Embedding(num_embeddings=n_dyads, embedding_dim=embed_dim)
-        # Placeholder for xLSTM implementation; replace with actual xLSTM cell
+
         if type == "X":
             self.xlstm = xLSTM(
                 input_size=n_features + embed_dim,

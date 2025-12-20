@@ -54,7 +54,7 @@ def merge_datasets(
     ).reset_index(drop=True)
 
     # Calculate average per year before imputation
-    gdp_year_average = pa.DataFrame(data={ "GDP_yearly_average": [] })
+    gdp_year_average = pa.DataFrame(data={"GDP_yearly_average": []})
     gdp_year_average["GDP_yearly_average"] = gdp_df_long.groupby("Year")["GDP"].mean()
 
     # Impute GDP

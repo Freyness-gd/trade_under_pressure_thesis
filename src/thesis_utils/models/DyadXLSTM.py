@@ -4,6 +4,7 @@ from torchxlstm import sLSTM, mLSTM, xLSTM
 
 
 class DyadXLSTM(nn.Module):
+
     def __init__(
         self,
         n_features,
@@ -14,7 +15,8 @@ class DyadXLSTM(nn.Module):
         dropout=0.3,
         horizon=1,
         type="X",
-        layers="msm",
+        layers="sm",
+        n_layers=1,
     ):
         super(DyadXLSTM, self).__init__()
         self.dyad_embed = nn.Embedding(num_embeddings=n_dyads, embedding_dim=embed_dim)
@@ -33,6 +35,7 @@ class DyadXLSTM(nn.Module):
                 head_size=hidden_size,
                 num_heads=num_heads,
                 batch_first=True,
+                num_layers=n_layers,
             )
         elif type == "M":
             self.xlstm = mLSTM(
@@ -40,6 +43,7 @@ class DyadXLSTM(nn.Module):
                 head_size=hidden_size,
                 num_heads=num_heads,
                 batch_first=True,
+                num_layers=n_layers,
             )
 
         self.fc = nn.Linear(self.xlstm.input_size, horizon)

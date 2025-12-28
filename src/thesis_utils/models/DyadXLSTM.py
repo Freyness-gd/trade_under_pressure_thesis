@@ -46,12 +46,14 @@ class DyadXLSTM(nn.Module):
                 num_layers=n_layers,
             )
 
-        self.fc = nn.Linear(self.xlstm.input_size, horizon)
+        self.output_dim = n_features + embed_dim
+        self.fc = nn.Linear(self.output_dim, horizon)
         self.input_dropout = nn.Dropout(dropout)
 
     def forward(self, X, dyad_idx):
         embedding = self.dyad_embed(dyad_idx)
-        embedding = embedding.unsqueeze(1).expand(-1, X.size(1), -1)
+        embedding = embedding.to(dtype=X.dtype)
+        embedding = embedding[:, None, :].expand(-1, X.size(1), -1)
         X = torch.cat([X, embedding], dim=-1)
 
         X = self.input_dropout(X)

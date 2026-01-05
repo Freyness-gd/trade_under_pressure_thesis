@@ -113,14 +113,26 @@ def make_panel_datasets_dyad_year(
     features: Sequence[str],
     target: str,
     horizon: int = 1,
+    dyads: Sequence[str] | None = None,
 ) -> Tuple[Dataset, Dict[str, int]]:
-    # Same as make panel datasets dyad but also return year
+    # Copy to avoid side effects
     df = data.copy()
-    df["dyad_idx"] = df["dyad_id"].cat.codes
+
+    # Optional dyad filter (FAST: happens once)
+    if dyads is not None:
+        df = df[df["dyad_id"].isin(dyads)].copy()
+
+    # Encode dyads
+    df["dyad_idx"] = df["dyad_id"].astype("category").cat.codes
     df["year"] = df["Year"].astype(int)
-    # 2) Optional: retrieve dyad → index mapping (if needed)
-    dyad_to_idx = {dyad: idx for idx, dyad in enumerate(df["dyad_id"].cat.categories)}
-    # 3) Wrap into Dataset
+
+    # Dyad → index mapping (after filtering!)
+    dyad_to_idx = {
+        dyad: idx
+        for idx, dyad in enumerate(df["dyad_id"].astype("category").cat.categories)
+    }
+
+    # Wrap into Dataset
     dataset = DatasetWrapperOptimizedWithYear(
         data=df,
         features=features,
